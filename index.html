@@ -1,9 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Site</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    iframe {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      border: 0;
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello world</h1>
+
+<iframe id="frame" referrerpolicy="no-referrer"></iframe>
+
+<script>
+  const BASE_URL = "http://example.com";
+
+  function buildUrlFromHash() {
+    let hash = window.location.hash || "#/";
+
+    // remove leading "#"
+    let path = hash.slice(1);
+
+    // ensure clean leading slash rules
+    if (!path.startsWith("/")) {
+      path = "/" + path;
+    }
+
+    return BASE_URL + path;
+  }
+
+  const iframe = document.getElementById("frame");
+  iframe.src = buildUrlFromHash();
+
+  // optional: update iframe when hash changes
+  window.addEventListener("hashchange", () => {
+    iframe.src = buildUrlFromHash();
+  });
+</script>
+
 </body>
 </html>
