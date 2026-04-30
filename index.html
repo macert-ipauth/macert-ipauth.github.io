@@ -1,51 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>IP authorization...</title>
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      overflow: hidden;
-    }
+    <title>IP authorization...</title>
+    <style>
+        html, body {
+          margin: 0;
+          height: 100%;
+          overflow: hidden;
+        }
 
-    iframe {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      border: 0;
-    }
-  </style>
+        iframe {
+          position: fixed;
+          inset: 0;
+          width: 100vw;
+          height: 100vh;
+          border: 0;
+        }
+    </style>
 </head>
 <body>
 
 <iframe id="frame" referrerpolicy="no-referrer"></iframe>
 
 <script>
-  const BASE_URL = "//ipauth.ct.ws";
+    const BASE_URL = "//ipauth.ct.ws";
 
-  function buildUrlFromHash() {
-    let hash = window.location.hash || "#/";
+    function buildUrlFromHash() {
+      let hash = window.location.hash || "#/";
 
-    // remove leading "#"
-    let path = hash.slice(1);
+      // remove leading "#"
+      let path = hash.slice(1);
 
-    // ensure clean leading slash rules
-    if (!path.startsWith("/")) {
-      path = "/" + path;
+      // ensure clean leading slash rules
+      if (!path.startsWith("/")) {
+        path = "/" + path;
+      }
+
+      return BASE_URL + path;
     }
 
-    return BASE_URL + path;
-  }
-
-  const iframe = document.getElementById("frame");
-  iframe.src = buildUrlFromHash();
-
-  // optional: update iframe when hash changes
-  window.addEventListener("hashchange", () => {
+    const iframe = document.getElementById("frame");
     iframe.src = buildUrlFromHash();
-  });
+
+    // handle redirection
+    const ALLOWED_ORIGINS = new Set([
+        "https://ipauth.ct.ws",
+        "http://ipauth.ct.ws"
+    ]);
+
+    window.addEventListener("message", (event) => {
+        if (!ALLOWED_ORIGINS.has(event.origin)) return;
+
+        if (event.data?.type === "REDIRECT") {
+            window.location.href = event.data.url;
+        }
+    });
 </script>
 
 </body>
